@@ -175,11 +175,15 @@ const Home: React.FC = () => {
 			));
 		}
 
+		if (items.length === 0 && status !== 'failed') {
+			return (
+				<div style={{ paddingBottom: '20px' }}>Пиццы не найдены</div>
+			);
+		}
+
 		if (status === 'failed') {
 			return <div>Произошла ошибка при загрузке пицц</div>;
 		}
-
-		return <div style={{ paddingBottom: '20px' }}>Пиццы не найдены</div>;
 	};
 
 	return (

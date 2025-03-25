@@ -1,12 +1,11 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import Home from '../pages/Home';
 import { fetchPizzas } from '../redux/slices/pizzaSlice';
 import { RootState } from '../redux/store';
 import { AnyAction } from '@reduxjs/toolkit';
-import { MockStoreEnhanced } from 'redux-mock-store';
+import configureStore, { MockStoreEnhanced } from 'redux-mock-store';
 import '@testing-library/jest-dom';
 
 jest.mock('../redux/slices/pizzaSlice', () => ({
@@ -15,7 +14,7 @@ jest.mock('../redux/slices/pizzaSlice', () => ({
 
 const mockStore = configureStore<RootState, AnyAction>([]);
 
-describe('Комппонент Home', () => {
+describe('Компонент Home', () => {
 	let store: MockStoreEnhanced<RootState, AnyAction>;
 
 	beforeEach(() => {
@@ -141,5 +140,51 @@ describe('Комппонент Home', () => {
 		expect(
 			screen.getByText(/Произошла ошибка при загрузке пицц/i)
 		).toBeInTheDocument();
+	});
+	test('Проверка отображения пицц на странице', () => {
+		store = mockStore({
+			pizza: {
+				items: [
+					{
+						id: '1',
+						imageUrl:
+							'https://media.dodostatic.net/image/r:292x292/11ee7d610d2925109ab2e1c92cc5383c.jpg',
+						title: 'Сырная',
+						types: ['традиционное'],
+						sizes: [26, 40],
+						price: 245,
+						rating: 6,
+					},
+					{
+						id: '2',
+						imageUrl:
+							'https://media.dodostatic.net/image/r:292x292/11ee7d6110059795842d40396bcf1e73.jpg',
+						title: 'Цыпленок барбекю',
+						types: ['тонкое'],
+						sizes: [26, 40],
+						price: 295,
+						rating: 4,
+					},
+				],
+				status: 'success',
+			},
+			filter: {
+				currentCategory: 0,
+				currentSort: 0,
+				currentOrder: 0,
+				currentPage: 1,
+				searchValue: '',
+			},
+			cart: { totalPrice: 0, cart: [] },
+		});
+
+		render(
+			<Provider store={store}>
+				<Home />
+			</Provider>
+		);
+
+		expect(screen.getByText(/Сырная/i)).toBeInTheDocument();
+		expect(screen.getByText(/Цыпленок барбекю/i)).toBeInTheDocument();
 	});
 });
